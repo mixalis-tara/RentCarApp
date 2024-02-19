@@ -9,7 +9,7 @@ import javax.swing.JScrollPane;
 public class RentedCarsWindow extends JFrame {
 
 	public RentedCarsWindow() {
-		 setTitle("Available Cars");
+		 setTitle("Rented Cars");
 	        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	        setSize(300, 200);
 	        getContentPane().setLayout(null);
