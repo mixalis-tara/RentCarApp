@@ -12,7 +12,7 @@ The Car Rental Application is a Java-based desktop application designed to manag
 
 - Rent a Car: Rent a car from the available inventory by selecting the desired car model, specifying the rental duration (up to 30 days), and choosing the customer renting the car. The application ensures that only available cars can be rented.
 
-- Search Customers and Cars: Search for customers by their first name or last name to view their rental history, including details of the cars they have rented. Similarly, search for cars by model to see how many times they have been rented out.
+- Search Customers and Cars: Search for customers by their first name or last name to view their rental history, including details of the cars they have rented. Similarly, search for cars by model to see which customer have rent the car.
 
 - Delete Customers and Cars: Remove customers and cars from the database. Deleting a customer removes all associated rental history, and deleting a car removes all records of its rentals.
 
