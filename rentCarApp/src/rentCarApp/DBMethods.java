@@ -141,75 +141,76 @@ public static void rentCar(Connection connection, int customerId, int carId, int
  }
     
     public static String searchCustomers(String searchInput) {
-    	DBUtils dbUtils = new DBUtils();
-        StringBuilder searchResults = new StringBuilder();
-        try (Connection connection = dbUtils.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "SELECT c.first_name, c.last_name, GROUP_CONCAT(car.model SEPARATOR ', ') AS rented_cars " +
-                             "FROM Customer c " +
-                             "LEFT JOIN Rental r ON c.customer_id = r.customer_id " +
-                             "LEFT JOIN Car car ON r.car_id = car.car_id " +
-                             "WHERE c.first_name LIKE ? OR c.last_name LIKE ? " +
-                             "GROUP BY c.customer_id")) {
-            statement.setString(1, "%" + searchInput + "%");
-            statement.setString(2, "%" + searchInput + "%");
+    DBUtils dbUtils = new DBUtils();
+    StringBuilder searchResults = new StringBuilder();
+    try (Connection connection = dbUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(
+                 "SELECT c.first_name, c.last_name, GROUP_CONCAT(car.model SEPARATOR ', ') AS rented_cars " +
+                         "FROM Customer c " +
+                         "LEFT JOIN Rental r ON c.customer_id = r.customer_id " +
+                         "LEFT JOIN Car car ON r.car_id = car.car_id " +
+                         "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ? " +
+                         "GROUP BY c.customer_id")) {
+        statement.setString(1, "%" + searchInput + "%");
 
-            ResultSet resultSet = statement.executeQuery();
+        ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                String rentedCars = resultSet.getString("rented_cars");
+        while (resultSet.next()) {
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
+            String rentedCars = resultSet.getString("rented_cars");
 
-                searchResults.append("Customer: ").append(firstName).append(" ").append(lastName).append("\n");
-                searchResults.append("Rented Cars: ").append(rentedCars).append("\n\n");
-            }
-
-            if (searchResults.length() == 0) {
-                searchResults.append("No results found.");
-            }
-
-            resultSet.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            searchResults.append("Error performing customer search.");
+            searchResults.append("Customer: ").append(firstName).append(" ").append(lastName).append("\n");
+            searchResults.append("Rented Cars: ").append(rentedCars).append("\n\n");
         }
-        return searchResults.toString();
+
+        if (searchResults.length() == 0) {
+            searchResults.append("No results found.");
+        }
+
+        resultSet.close();
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        searchResults.append("Error performing customer search.");
     }
+    return searchResults.toString();
+}
+
     
     public static String searchCars(String searchInput) {
-    	DBUtils dbUtils = new DBUtils();
-        StringBuilder searchResults = new StringBuilder();
-        try (Connection connection = dbUtils.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "SELECT car.model, COUNT(r.customer_id) AS rental_count " +
-                             "FROM Car car " +
-                             "LEFT JOIN Rental r ON car.car_id = r.car_id " +
-                             "WHERE car.model LIKE ? " +
-                             "GROUP BY car.car_id")) {
-            statement.setString(1, "%" + searchInput + "%");
+    DBUtils dbUtils = new DBUtils();
+    StringBuilder searchResults = new StringBuilder();
+    try (Connection connection = dbUtils.getConnection();
+         PreparedStatement statement = connection.prepareStatement(
+                 "SELECT car.model, c.first_name, c.last_name " +
+                         "FROM Car car " +
+                         "LEFT JOIN Rental r ON car.car_id = r.car_id " +
+                         "LEFT JOIN Customer c ON r.customer_id = c.customer_id " +
+                         "WHERE car.model LIKE ?")) {
+        statement.setString(1, "%" + searchInput + "%");
 
-            ResultSet resultSet = statement.executeQuery();
+        ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                String model = resultSet.getString("model");
-                int rentalCount = resultSet.getInt("rental_count");
+        while (resultSet.next()) {
+            String model = resultSet.getString("model");
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
 
-                searchResults.append("Car: ").append(model).append("\n");
-                searchResults.append("Rental Count: ").append(rentalCount).append("\n\n");
-            }
-
-            if (searchResults.length() == 0) {
-                searchResults.append("No results found.");
-            }
-
-            resultSet.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            searchResults.append("Error performing car search.");
+            searchResults.append("Car: ").append(model).append("\n");
+            searchResults.append("Rented by: ").append(firstName).append(" ").append(lastName).append("\n\n");
         }
-        return searchResults.toString();
+
+        if (searchResults.length() == 0) {
+            searchResults.append("No results found.");
+        }
+
+        resultSet.close();
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        searchResults.append("Error performing car search.");
     }
+    return searchResults.toString();
+}
 
     public static boolean addCarFromGui(String model, String category, double dailyCost, int cubicCapacity, int seat) {
     	DBUtils dbUtils = new DBUtils();
