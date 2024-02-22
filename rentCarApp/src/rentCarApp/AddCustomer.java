@@ -112,12 +112,17 @@ public class AddCustomer {
         btnAddCustomer.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Get input data
-                String firstName = textFieldFirstName.getText();
-                String lastName = textFieldLastName.getText();
-                String gender = textFieldGender.getText();
-                String homeAddress = textFieldHomeAddress.getText();
-                String email = textFieldEmail.getText();
-                String phone = textFieldPhone.getText();
+                String firstName = textFieldFirstName.getText().trim();
+                String lastName = textFieldLastName.getText().trim();
+                String gender = textFieldGender.getText().trim();
+                String homeAddress = textFieldHomeAddress.getText().trim();
+                String email = textFieldEmail.getText().trim();
+                String phone = textFieldPhone.getText().trim();
+
+                if (firstName.isEmpty() || lastName.isEmpty() || gender.isEmpty() || homeAddress.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Please fill in all fields.");
+                    return;
+                }
                 
                 // Check if customer email already exists
                 if (DBMethods.customerEmailExists(email)) {
