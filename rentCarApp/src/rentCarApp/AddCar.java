@@ -18,6 +18,13 @@ public class AddCar {
     private JTextField textFieldDailyCost;
     private JTextField textFieldCubicCapacity;
     private JTextField textFieldSeat;
+	// The isValidCategory method to validate the category input:
+    private boolean isValidCategory(String category) {
+        return category.equalsIgnoreCase("Small") ||
+               category.equalsIgnoreCase("Large") ||
+               category.equalsIgnoreCase("Economy") ||
+               category.equalsIgnoreCase("Jeep");
+    }
 
     /**
      * Launch the application.
@@ -104,12 +111,35 @@ public class AddCar {
         btnAddCar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Call method to add car with input data
-                String model = textFieldModel.getText();
-                String category = textFieldCategory.getText();
-                double dailyCost = Double.parseDouble(textFieldDailyCost.getText());
-                int cubicCapacity = Integer.parseInt(textFieldCubicCapacity.getText());
-                int seat = Integer.parseInt(textFieldSeat.getText());
-                
+                String model = textFieldModel.getText().trim();
+            	 String category = textFieldCategory.getText().trim();
+                 String dailyCostText = textFieldDailyCost.getText().trim();
+                 String cubicCapacityText = textFieldCubicCapacity.getText().trim();
+                 String seatText = textFieldSeat.getText().trim();
+
+		// Check for empty fields
+                if (model.isEmpty() || category.isEmpty() || dailyCostText.isEmpty() || cubicCapacityText.isEmpty() || seatText.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Please fill in all fields.");
+                    return;
+                }
+		    // Parse numeric values
+                double dailyCost;
+                int cubicCapacity;
+                int seat;
+                try {
+                    dailyCost = Double.parseDouble(dailyCostText);
+                    cubicCapacity = Integer.parseInt(cubicCapacityText);
+                    seat = Integer.parseInt(seatText);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Invalid numeric format.");
+                    return;
+                }
+                // check category
+                if (!isValidCategory(category)) {
+           	     JOptionPane.showMessageDialog(frame, "Invalid category. Please enter one of the following options: Small, Large, Economy, Jeep");
+           	     return; // Stop further execution
+           	 }
+		    
                 // Check if a car with the same model already exists
                 if (DBMethods.carModelExists(model)) {
                     JOptionPane.showMessageDialog(frame, "A car with the same model already exists. Please enter a different model.");
